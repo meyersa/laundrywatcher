@@ -1,0 +1,14 @@
+{
+  "name": "Laundry Watcher",
+  "version": "0.1",
+  "description": "Checks the Laundry machines to see if any have been idle for an excessive amount of time.",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "August Meyers (meyersa.com)",
+  "dependencies": {
+    "node-fetch": "^3.2.0"
+  }
+}
