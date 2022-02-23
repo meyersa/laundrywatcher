@@ -37,7 +37,7 @@ async function startInterval() {
     purgeOld();
 
     const sendEmbed = await initEmbed();
-    var webInterval = setInterval(() => webMain(sendEmbed), 5000);
+    var webInterval = setInterval(() => webMain(sendEmbed), 15000);
 
     console.log("Started Interval...");
 
