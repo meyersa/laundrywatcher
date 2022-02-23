@@ -1,6 +1,6 @@
 {
   "name": "Laundry Watcher",
-  "version": "0.1",
+  "version": "0.9",
   "description": "Checks the Laundry machines to see if any have been idle for an excessive amount of time.",
   "main": "index.js",
   "type": "module",
@@ -9,6 +9,7 @@
   },
   "author": "August Meyers (meyersa.com)",
   "dependencies": {
+    "discord.js": "^13.6.0",
     "node-fetch": "^3.2.0"
   }
 }
