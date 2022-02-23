@@ -21,7 +21,7 @@ var resultTime = [
 // [i] (2) = Available Started
 // [i] (3) = Available Duration
 
-client.on('ready', () => {
+client.on('ready', async () => {
     console.log(`Logged in as ${client.user.username}`)
     // Step 0 -- If fails, bot should too, no error catching
 
