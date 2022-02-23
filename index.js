@@ -34,10 +34,10 @@ client.on('ready', async () => {
     console.log("Sent Embed...");
     // Step 2 -- If fails, bot should too, no error catching 
 
-    setInterval(() =>
+    setInterval(() => {
         webMain(sendEmbed).catch((e) => console.error((e))),
         console.log("Finished Interval...")
-        , 15000);
+    }, 15000);
     console.log("Started Intervaling...");
     // Step 3+ -- If fails, could be one time thing, catches error
 
