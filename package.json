@@ -1,6 +1,6 @@
 {
   "name": "Laundry Watcher",
-  "version": "0.9",
+  "version": "1.0",
   "description": "Checks the Laundry machines to see if any have been idle for an excessive amount of time.",
   "main": "index.js",
   "type": "module",

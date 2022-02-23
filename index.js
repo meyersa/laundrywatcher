@@ -1,25 +1,14 @@
-/*
-*	Bot created by: Meyers#6464
-*	Version: 0.9   
-*/
+// Bot Created by Meyers#6464 | https://github.com/meyersa/laundrywatcher
+
+import { Client, Intents, MessageEmbed } from "discord.js";
+import fetch from "node-fetch";
 
 const webURL = process.env.webURL;
 const updateChannel = process.env.updateChannel;
 const embedTitle = process.env.embedTitle;
 const embedColor = process.env.embedColor;
 const clientToken = process.env.clientToken;
-
-import { Client, Intents, MessageEmbed } from "discord.js";
-import fetch from "node-fetch";
-
 const client = new Client({ intents: [Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS] });
-
-client.on('ready', () => {
-    startInterval();
-
-});
-
-client.login(clientToken);
 
 var resultTime = [
     ["0", "0", "0", "0"],
@@ -27,21 +16,34 @@ var resultTime = [
     ["0", "0", "0", "0"],
     ["0", "0", "0", "0"]
 ];
-// [i] (1) = ID
-// [i] (2) = Time Idle Started
-// [i] (3) = Last Idle Time
-// [i] (4) = Idle total time
-// [i] (5) = Sent Notification
+// [i] (0) = Idle Started
+// [i] (1) = Idle Duration
+// [i] (2) = Available Started
+// [i] (3) = Available Duration
 
-async function startInterval() {
+client.on('ready', () => {
+    console.log(`Logged in as ${client.user.username}`)
+    // Step 0 -- If fails, bot should too, no error catching
+
     purgeOld();
+    console.log("Purged Old Messages...");
+    // Step 1 -- If fails, bot should too, no error catching 
 
     const sendEmbed = await initEmbed();
-    var webInterval = setInterval(() => webMain(sendEmbed), 15000);
+    console.log("Sent Embed...");
+    // Step 2 -- If fails, bot should too, no error catching 
 
-    console.log("Started Interval...");
+    setInterval(() =>
+        webMain(sendEmbed).catch((e) => console.error((e))),
+        console.log("Finished Interval...")
+        , 15000);
+    console.log("Started Intervaling...");
+    // Step 3+ -- If fails, could be one time thing, catches error
 
-}
+});
+
+client.login(clientToken);
+// Bot logins in, triggers ready event on successful start, crashes if not 
 
 async function purgeOld() {
     var channel = await client.channels.fetch(updateChannel);
@@ -53,14 +55,12 @@ async function purgeOld() {
 
 }
 
-
 async function webMain(sendEmbed) {
-    console.log("Started Web Main...");
+    // console.log("Started Web Main...");
 
     var webResults = await (await fetch(webURL)).json();
     var textField = ["", "", "", ""];
-
-    console.log("Pulled JSON...");
+    // console.log("Pulled JSON...");
 
     for (let i = 0; i < webResults.objects.length; i++) {
         if (!(webResults.objects[i].type === "washTL") && !(webResults.objects[i].type === "dry")) {
@@ -75,14 +75,15 @@ async function webMain(sendEmbed) {
 
         }
 
-        if ((webResults.objects[i].type === "washTL") && !(webResults.objects[i].time_left_lite === "Idle") && !(webResults.objects[i].time_left_lite === "Available")) {
-            webResults.objects[i].time_remaining -= 7;
+        // if ((webResults.objects[i].type === "washTL") && !(webResults.objects[i].time_left_lite === "Idle") && !(webResults.objects[i].time_left_lite === "Available")) {
+        //     webResults.objects[i].time_remaining -= 7;
 
-            if (webResults.objects[i].time_remaining < 0) {
-                webResults.objects[i].time_left_lite = "Idle";
+        //     if (webResults.objects[i].time_remaining < 0) {
+        //         webResults.objects[i].time_left_lite = "Idle";
 
-            }
-        }
+        //     }
+        // }
+        // Offsets the incorrect time, but it does not seem to be a constant? 
 
         // If it is a washer or dryer 
         if (webResults.objects[i].time_left_lite === "Idle") {
@@ -120,8 +121,6 @@ async function webMain(sendEmbed) {
         if (webResults.objects[i].time_left_lite === "Available") {
             // If it is AVAILABLE 
 
-
-
             if (resultTime[i][2] == 0) {
                 // If it was not AVAILABLE before 
 
@@ -150,17 +149,17 @@ async function webMain(sendEmbed) {
 
         // Clears available timers 
 
-        
         textField[i] = `⚠️ in use for ${(webResults.objects[i].time_remaining)} minutes`;
 
     }
 
-    console.log(textField);
-    console.log(resultTime);
+    // console.log(textField);
+    // console.log(resultTime);
 
-    console.log("Finished Web Main...");
+    // console.log("Finished Web Main...");
 
     editEmbed(sendEmbed, textField);
+    // Edits the embed using the message and the textresults 
 
 }
 
@@ -169,14 +168,18 @@ async function initEmbed() {
         .setTitle(embedTitle)
         .setColor(embedColor)
         .setURL(webURL)
+        .setDescription("Checks the status of the laundry machines every 30 seconds.\n*in use times are most likely off*")
         .setTimestamp();
 
     var channel = await client.channels.fetch(updateChannel);
+    // Grabs the channel with ID, not needed again so we can just do the call
 
-    var sendEmbed = await channel.send({ embeds: [Embed] })
-        .then(console.log("First embed sent."));
+    var sendEmbed = await channel.send({ embeds: [Embed] });
+    // Sends the embed
 
     return sendEmbed;
+    // Returns the embed message for editing 
+
 };
 
 async function editEmbed(sendEmbed, textField) {
@@ -185,6 +188,7 @@ async function editEmbed(sendEmbed, textField) {
         .setColor(embedColor)
         .setURL(webURL)
         .setTimestamp()
+        .setDescription("Checks the status of the laundry machines every 30 seconds.\n*in use times are most likely off*")
         .setFields(
             { name: "Washer 1", value: textField[0] },
             { name: "Washer 2", value: textField[1] },
@@ -192,7 +196,7 @@ async function editEmbed(sendEmbed, textField) {
             { name: "Dryer 2", value: textField[3] },
         );
 
-    await sendEmbed.edit({ embeds: [Embed] })
-        .then(console.log("Updated embed"));
+    await sendEmbed.edit({ embeds: [Embed] });
+    // Edits embed
 
 };
