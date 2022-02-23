@@ -4,6 +4,7 @@ import { Client, Intents, MessageEmbed } from "discord.js";
 import fetch from "node-fetch";
 
 const webURL = process.env.webURL;
+const statusURL = process.env.statusURL;
 const updateChannel = process.env.updateChannel;
 const embedTitle = process.env.embedTitle;
 const embedColor = process.env.embedColor;
@@ -167,7 +168,7 @@ async function initEmbed() {
     var Embed = new MessageEmbed()
         .setTitle(embedTitle)
         .setColor(embedColor)
-        .setURL(webURL)
+        .setURL(statusURL)
         .setDescription("Checks the status of the laundry machines every 30 seconds.\n*in use times are most likely off*")
         .setTimestamp();
 
@@ -186,7 +187,7 @@ async function editEmbed(sendEmbed, textField) {
     var Embed = new MessageEmbed()
         .setTitle(embedTitle)
         .setColor(embedColor)
-        .setURL(webURL)
+        .setURL(statusURL)
         .setTimestamp()
         .setDescription("Checks the status of the laundry machines every 30 seconds.\n*in use times are most likely off*")
         .setFields(
